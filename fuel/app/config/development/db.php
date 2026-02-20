@@ -5,13 +5,11 @@
 
 return array(
 	'default' => array(
-		'type'        => 'mysqli',
-		'connection'  => array(
-			'hostname'   => 'db',
-			'database'   => 'fuelphp',
-			'username'   => 'root',
-			'password'   => 'root',
-			'persistent' => false,
+		'type' => 'pdo',
+		'connection' => array(
+			'dsn' => 'mysql:host=db;dbname=atcoder_archive_db',
+			'username' => 'root',
+			'password' => 'root',
 		),
 		'identifier'   => '`',
 		'table_prefix' => '',
