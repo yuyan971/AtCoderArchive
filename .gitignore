@@ -1,3 +1,4 @@
 /.vscode
 .env
 fuel/app/logs/
+cache/
