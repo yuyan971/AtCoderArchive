@@ -1,6 +1,7 @@
 <?php
 namespace Home;
 use Home\Model_Atcoderproblems;
+use Home\Model_Atcoder;
 use Home\Model_Db;
 
 class Controller_Home extends \Controller
@@ -12,6 +13,30 @@ class Controller_Home extends \Controller
 	public function before()
 	{
 		if (!\Auth::check()) return \Response::redirect('/auth/login');
+	}
+
+    public function post_import() // 右上のfetchボタンから呼び出す
+	{
+		$validate = function ($id) {
+			$result = preg_match('/^(abc[0-9]{3}|[0-9]{3})$/i', $id);
+			if (!$result) return \Response::redirect('/home');
+			$valid_id = preg_match('/^[0-9]{3}$/', $id) // 英小文字+数字の形に正規化（例: abc440）
+				? 'abc' . $id
+				: (strtolower(substr($id, 0, 3)) . substr($id, 3));
+			return $valid_id; 
+		};
+		$update_db_from_atcoder_fetch = function ($contest_id, $user_id) {
+			$atcoder_username = Model_Db::get_target_atcoder_user($user_id); // ログイン中のユーザからAtCoderのユーザ名を取得
+			$new_data = Model_Atcoder::fetch_submissions($contest_id, $atcoder_username); // AtCoderのサイトからスクレイピング
+			Model_Db::update_db_from_atcoder_fetch($new_data);
+		};
+
+		$input_id = \Input::post('contest_id', '');
+		$contest_id = $validate($input_id); // フロントでもバリデーションを行うが，念のためバックでもバリデーション
+		list(, $user_id) = \Auth::get_user_id();
+		if ($user_id === null) return \Response::redirect('/home'); // user_idが取得できない場合はリダイレクト << beforeでログインチェックしてるから取れるはずだが一応．
+		$update_db_from_atcoder_fetch($contest_id, $user_id);
+		return \Response::redirect('/home');
 	}
 
 	public function get_index()

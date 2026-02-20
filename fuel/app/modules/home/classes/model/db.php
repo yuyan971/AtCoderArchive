@@ -126,4 +126,65 @@ class Model_Db extends \Model
             }
         }
 	}
+
+    public static function update_db_from_atcoder_fetch($fetched_data)
+	{
+		if (empty($fetched_data)) return;
+		
+		$username = isset($fetched_data[0]['user']) ? $fetched_data[0]['user'] : ''; // 最初の要素からユーザー名を取得（すべての要素が同じユーザーのはず）
+		if ($username === '') return; // ユーザー名が取得できない場合は終了 ただ，そんな場合は存在しないはず
+
+		// atcoder_usersテーブルからユーザーIDを取得
+		$tmp = \DB::select('id')->from('atcoder_users')->where('user_name', '=', $username)->execute()->as_array(); 
+		if (empty($tmp)) return; // ユーザーが存在しない場合は終了 そんな場合も存在しないはず
+		$atcoder_users_table_id = (int) $tmp[0]['id'];
+
+		// すべてのtask_idを収集 (例: abc440_a, abc221_b)
+		$problem_id_strs = array();
+		foreach ($fetched_data as $submission) {
+			$task_id = isset($submission['task_id']) ? $submission['task_id'] : ''; // abc440_a とか abc221_b とか
+			if ($task_id !== '') $problem_id_strs[$task_id] = '_'; // 中の値を使用することはない
+		}
+		if (empty($problem_id_strs)) return; // 問題IDが1つもない場合は終了
+
+		// problemsテーブルから該当する問題の内部IDを取得
+		$problem_rows = \DB::select('id', 'problem_id')->from('problems')->where('problem_id', 'IN', array_keys($problem_id_strs))->execute()->as_array();
+		$problem_id_to_internal = array(); // task_id → problemsテーブルのid のマップ
+		foreach ($problem_rows as $pr) {
+			$problem_id_to_internal[$pr['problem_id']] = (int) $pr['id']; // [abc440_a] => 1 とか [abc221_b] => 2 とか
+		}
+
+		foreach ($fetched_data as $submission) { // 各提出を処理
+			$submission_id = isset($submission['submission_id']) ? $submission['submission_id'] : '';
+			if ($submission_id === '' || $submission_id === null) continue; // submission_idがない場合はスキップ
+
+			$task_id = isset($submission['task_id']) ? $submission['task_id'] : '';
+			if ($task_id === '') continue; // task_idがない場合はスキップ
+
+			// problemsテーブルに存在しない問題は弾く
+			if (!isset($problem_id_to_internal[$task_id])) continue;
+
+			$problem_internal_id = $problem_id_to_internal[$task_id];
+			$submission_id_str = (string) $submission_id;
+			$result = isset($submission['status']) ? $submission['status'] : '';
+			$language = isset($submission['language']) ? $submission['language'] : '';
+			$language = self::normalize_language($language);
+
+			// 既存の提出かチェック
+			$existing = \DB::select('id')->from('submissions')->where('submission_id', '=', $submission_id_str)->execute()->as_array();
+			if (!empty($existing)) {
+				// 既に存在する場合は更新
+				\DB::update('submissions')->set(array('result' => $result, 'language' => $language))->where('submission_id', '=', $submission_id_str)->execute();
+			} else {
+				// 新規の場合は挿入
+				\DB::insert('submissions')->set(array(
+					'submission_id'   => $submission_id_str,
+					'atcoder_user_id' => $atcoder_users_table_id,
+					'problem_id'      => $problem_internal_id,
+					'result'          => $result,
+					'language'        => $language, // C++ とか
+				))->execute();
+			}
+		}
+	}
 }
