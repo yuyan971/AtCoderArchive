@@ -18,8 +18,8 @@ services:
       context: ../
       dockerfile: docker/db/Dockerfile
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: fuelphp
+      MYSQL_ROOT_PASSWORD: "${ATCODER_ARCHIVE_DB_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${ATCODER_ARCHIVE_DB_DATABASE}"
     ports:
       - "3306:3306"
     networks:
