@@ -1,0 +1,42 @@
+@charset "utf-8";
+
+.wh {
+    color: #fff;
+}
+.flex {
+    display: flex;
+}
+.hidden {
+    visibility: hidden;
+    pointer-events: none;
+}
+.bg-emph {
+    background: rgba(255, 255, 255, 0.04);
+}
+.round {
+    border-radius: 4px;
+}
+.no-deco {
+    text-decoration: none;
+}
+
+.mb125 {
+    margin-bottom: 1.25rem;
+}
+.mt2 {
+    margin-top: 2rem;
+}
+
+.bl {
+    color: #2d3436;
+}
+.gray {
+    color: #636e72;
+}
+.grid {
+    display: grid;
+    margin-bottom: 2rem
+}
+.center {
+    text-align: center;
+}
