@@ -31,6 +31,8 @@ class Controller_Home extends \Controller
 			Model_Db::update_db_from_atcoder_fetch($new_data);
 		};
 
+		if (!\Security::check_token()) return \Response::redirect('/home'); // CSRF対策
+
 		$input_id = \Input::post('contest_id', '');
 		$contest_id = $validate($input_id); // フロントでもバリデーションを行うが，念のためバックでもバリデーション
 		list(, $user_id) = \Auth::get_user_id();

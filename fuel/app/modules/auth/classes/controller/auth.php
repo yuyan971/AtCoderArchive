@@ -42,6 +42,7 @@ class Controller_Auth extends \Controller
 
     public function post_login()
     {
+        if (!\Security::check_token()) return \Response::redirect('/auth/login'); // CSRF対策
         $email = trim(\Input::post('email', ''));
         $password = \Input::post('password', '');
         $errors = array();
@@ -72,6 +73,7 @@ class Controller_Auth extends \Controller
 
     public function post_signup()
 	{
+		if (!\Security::check_token()) return \Response::redirect('/auth/signup'); // CSRF対策
 		$errors = array();
 		$atcoder_username = trim(\Input::post('atcoder_username', ''));
 		$email = trim(\Input::post('email', ''));
@@ -123,6 +125,7 @@ class Controller_Auth extends \Controller
 
     public function post_update() // auth/settingsより実行
 	{
+		if (!\Security::check_token()) return \Response::redirect('/auth/settings'); // CSRF対策
 		$errors = array();
 		$new_email = trim(\Input::post('email', ''));
 		$new_atcoder_username = trim(\Input::post('atcoder_username', ''));
@@ -165,12 +168,14 @@ class Controller_Auth extends \Controller
 
 	public function post_logout()
 	{
+		if (!\Security::check_token()) return \Response::redirect('/auth/settings'); // CSRF対策
 		\Auth::logout();
 		return \Response::redirect('/auth/login');
 	}
 
 	public function post_leave()
 	{
+		if (!\Security::check_token()) return \Response::redirect('/auth/settings'); // CSRF対策
 		try {
 			list(, $user_id) = \Auth::get_user_id();
 			Model_Db::logical_delete_user($user_id);

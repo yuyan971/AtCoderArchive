@@ -20,6 +20,7 @@
     <?php endif; ?>
 
     <form method="POST" action="/auth/update">
+        <input type="hidden" name="<?php echo Config::get('security.csrf_token_key'); ?>" value="<?php echo \Security::fetch_token(); ?>">
         <div class="form-group mb125">
             <label for="atcoder_username">AtCoder User ID</label>
             <input type="text" id="atcoder_username" name="atcoder_username" value="<?php echo htmlspecialchars($atcoder_username ?: ''); ?>" placeholder="AtCoder username">
@@ -50,12 +51,14 @@
     <div class="settings-footer flex">
         <div class="footer-left flex">
             <form method="POST" action="/auth/logout">
+                <input type="hidden" name="<?php echo Config::get('security.csrf_token_key'); ?>" value="<?php echo \Security::fetch_token(); ?>">
                 <button type="submit" class="btn-logout">ログアウト</button>
             </form>
         </div>
         <span class="sep">|</span>
         <div class="footer-right flex">
             <form method="POST" action="/auth/leave" id="leave-form">
+                <input type="hidden" name="<?php echo Config::get('security.csrf_token_key'); ?>" value="<?php echo \Security::fetch_token(); ?>">
                 <button type="button" class="btn-leave" id="btn-leave">退会</button>
             </form>
         </div>

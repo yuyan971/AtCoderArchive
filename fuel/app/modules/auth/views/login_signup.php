@@ -13,6 +13,7 @@
     <?php endif; ?>
 
     <form method="POST" action="<?php echo htmlspecialchars($action); ?>">
+        <input type="hidden" name="<?php echo Config::get('security.csrf_token_key'); ?>" value="<?php echo \Security::fetch_token(); ?>">
         <?php if ($is_login): ?>
             <div class="form-group mb125">
                 <label for="email">Email</label>

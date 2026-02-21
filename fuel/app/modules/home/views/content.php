@@ -3,6 +3,7 @@
 <div class="content">
     <div class="add-contest-form-wrap">
         <form class="add-contest-form" method="POST" action="/home/import">
+            <input type="hidden" name="<?php echo Config::get('security.csrf_token_key'); ?>" value="<?php echo \Security::fetch_token(); ?>">
             <input type="text" name="contest_id" placeholder="Contest ID here" required>
             <button type="submit">fetch</button>
         </form>
