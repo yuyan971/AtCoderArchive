@@ -1,198 +1,24 @@
-<style>
-    .content {
-        padding: 2rem;
-    }
-    .content-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-bottom: 1.5rem;
-        color: #2d3436;
-        text-align: center;
-    }
-    .tab-navigation {
-        display: flex;
-        justify-content: center;
-        gap: 0;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid #dfe6e9;
-    }
-    .tab-button {
-        padding: 0.75rem 1.5rem;
-        background: transparent;
-        border: none;
-        border-bottom: 3px solid transparent;
-        color: #636e72;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        position: relative;
-        top: 2px;
-    }
-    .tab-button:hover {
-        color: #2d3436;
-        background: rgba(45, 52, 54, 0.05);
-    }
-    .tab-button.active {
-        color: #2d3436;
-        border-bottom-color: #2d3436;
-        background: transparent;
-    }
-    .tab-content {
-        display: none;
-        animation: fadeIn 0.3s ease;
-    }
-    .tab-content.active {
-        display: block;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .tab-placeholder {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border: 2px dashed #dfe6e9;
-        color: #636e72;
-    }
-    .tab-placeholder-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        opacity: 0.5;
-    }
-    .tab-placeholder-title {
-        font-size: 1.25rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        color: #2d3436;
-    }
-    .tab-placeholder-desc {
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-    .stats-container {
-        width: 80%;
-        margin: 0 auto;
-    }
-    .diff-gray { color: #808080; }
-    .diff-brown { color: #804000; }
-    .diff-green { color: #008000; }
-    .diff-cyan { color: #00c0c0; }
-    .diff-blue { color: #0000ff; }
-    .diff-yellow { color: #c0c000; }
-    .diff-orange { color: #ff8000; }
-    .diff-red { color: #ff0000; }
-    .chart-wrapper {
-        max-width: 400px;
-        margin: 0 auto 2rem;
-    }
-    .chart-legend {
-        margin-top: 1rem;
-        font-size: 0.9rem;
-        color: #2d3436;
-    }
-    .by-problem-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 1.5rem;
-        justify-items: center;
-        margin-top: 2.5rem;
-        margin-bottom: 2rem;
-    }
-    .by-problem-cell {
-        margin-top: 0.5rem;
-        margin-bottom: 2.5rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .by-problem-cell canvas {
-        max-width: 180px;
-        max-height: 180px;
-    }
-    .by-problem-label {
-        margin-top: 4rem;
-        font-weight: 600;
-        font-size: 1.25rem;
-        color: #2d3436;
-    }
-    .by-problem-count {
-        margin-top: 0.75rem;
-        font-size: 1.25rem;
-        color: #636e72;
-    }
-    .by-difficulty-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-        justify-items: center;
-        margin-top: 2.5rem;
-        margin-bottom: 2rem;
-    }
-    .by-difficulty-cell {
-        margin-top: 0.5rem;
-        margin-bottom: 2rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .by-difficulty-label {
-        margin-top: 2rem;
-        font-weight: 600;
-        font-size: 1.25rem;
-        color: #2d3436;
-    }
-    .by-difficulty-cell canvas {
-        max-width: 210px;
-        max-height: 210px;
-    }
-    .language-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.25rem 1.5rem;
-        margin-top: 2rem;
-        margin-bottom: 2rem;
-    }
-    .language-cell {
-        text-align: center;
-        padding: 1rem 0.5rem;
-    }
-    .language-name {
-        font-weight: 600;
-        font-size: 2rem;
-        color: #636e72;
-        word-break: break-word;
-    }
-    .language-count {
-        margin-top: 2.5rem;
-        font-weight: 800;
-        font-size: 3rem;
-        color: #2d3436;
-    }
-</style>
-
+<?php echo \Asset::css('stats/stats.css'); ?>
 <div class="content">
-    <h2 class="content-title">Statistics</h2>
+    <h2 class="content-title center bl">Statistics</h2>
     <div class="stats-container" id="stats-app">
-        <div class="tab-navigation" data-bind="foreach: tabs">
-            <button class="tab-button" data-bind="click: $root.selectTab.bind($root, id), css: { active: $root.currentTab() === id }, text: label"></button>
+        <div class="tab-navigation flex" data-bind="foreach: tabs">
+            <button class="tab-button gray" data-bind="click: $root.selectTab.bind($root, id), css: { active: $root.currentTab() === id }, text: label"></button>
         </div>
         <div class="tab-content" data-bind="css: { active: isByProblemTab() }">
-            <div class="by-problem-grid" id="by-problem-grid">
+            <div class="by-problem-grid grid" id="by-problem-grid">
                 <?php for ($i = 0; $i < 7; $i++): $letter = chr(ord('A') + $i); ?>
-                <div class="by-problem-cell">
+                <div class="by-problem-cell flex">
                     <canvas id="chart-by-problem-<?php echo $letter; ?>" width="180" height="180"></canvas>
-                    <div class="by-problem-label">Problem <?php echo $letter; ?></div>
-                    <div class="by-problem-count" id="count-by-problem-<?php echo $letter; ?>">0 / 0</div>
+                    <div class="by-problem-label bl">Problem <?php echo $letter; ?></div>
+                    <div class="by-problem-count gray" id="count-by-problem-<?php echo $letter; ?>">0 / 0</div>
                 </div>
                 <?php endfor; ?>
             </div>
         </div>
         <div class="tab-content" data-bind="css: { active: isByDifficultyTab() }">
             <div id="by-difficulty-chart-area">
-                <div class="by-difficulty-grid" id="by-difficulty-grid">
+                <div class="by-difficulty-grid grid" id="by-difficulty-grid">
                     <?php
                     $diffOrder = array('gray', 'brown', 'green', 'cyan', 'blue', 'yellow', 'orange', 'red');
                     $diffLabels = array(
@@ -200,10 +26,10 @@
                         'blue' => '1600 ~ 1999', 'yellow' => '2000 ~ 2399', 'orange' => '2400 ~ 2799', 'red' => '2800 ~'
                     );
                     foreach ($diffOrder as $diff): ?>
-                    <div class="by-difficulty-cell">
+                    <div class="by-difficulty-cell flex">
                         <canvas id="chart-by-difficulty-<?php echo $diff; ?>" width="210" height="210"></canvas>
-                        <div class="by-difficulty-label"><?php echo $diffLabels[$diff]; ?></div>
-                        <div class="by-problem-count" id="count-by-difficulty-<?php echo $diff; ?>">0 / 0</div>
+                        <div class="by-difficulty-label bl mt2"><?php echo $diffLabels[$diff]; ?></div>
+                        <div class="by-problem-count gray" id="count-by-difficulty-<?php echo $diff; ?>">0 / 0</div>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -214,15 +40,15 @@
             $by_lang = isset($stats_data['by_language']) && is_array($stats_data['by_language']) ? $stats_data['by_language'] : array();
             ?>
             <?php if (empty($by_lang)): ?>
-            <div class="tab-placeholder">
+            <div class="tab-placeholder gray center">
                 <div class="tab-placeholder-desc">No data yet.</div>
             </div>
             <?php else: ?>
-            <div class="language-grid">
+            <div class="language-grid grid mt2">
                 <?php foreach ($by_lang as $lang => $ac_count): ?>
-                <div class="language-cell">
-                    <div class="language-name">AC in <?php echo htmlspecialchars($lang, ENT_QUOTES, 'UTF-8'); ?></div>
-                    <div class="language-count"><?php echo (int) $ac_count; ?></div>
+                <div class="language-cell center">
+                    <div class="language-name gray">AC in <?php echo htmlspecialchars($lang, ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div class="language-count bl"><?php echo (int) $ac_count; ?></div>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -332,7 +158,6 @@
     function drawByProblemCharts() {
         drawDoughnutCharts(statsData.by_letter, LETTERS, 'problem', chartsByProblem, { cutout: '70%' });
     }
-
     function drawByDifficultyCharts() {
         drawDoughnutCharts(statsData.by_difficulty, DIFF_ORDER, 'difficulty', chartsByDifficulty, {
             cutout: '75%',
@@ -368,21 +193,17 @@
         }
     }
     var tabSwitchId = 0;
-
     function StatsViewModel() {
         var self = this;
-
         self.tabs = ko.observableArray([
             { id: 'by-problem', label: 'By Problem' },
             { id: 'by-difficulty', label: 'By Difficulty' },
             { id: 'language', label: 'Language' }
         ]);
-
         self.currentTab = ko.observable('by-problem');
         self.isByProblemTab = ko.computed(function() { return self.currentTab() === 'by-problem'; });
         self.isByDifficultyTab = ko.computed(function() { return self.currentTab() === 'by-difficulty'; });
         self.isLanguageTab = ko.computed(function() { return self.currentTab() === 'language'; });
-
         function runChartTabTransition(tabName, switchId, drawCharts, isFirst) {
             if (isFirst) {
                 drawCharts(); // 初回は描画（と必要なら表示）をコールバックに任せる
@@ -405,7 +226,6 @@
             var switchId = tabSwitchId;
             self.currentTab(tabName);
             setChartCanvasesVisible(tabName, false);
-
             if (tabName === 'by-problem') {
                 if (chartsByProblem.length === 0) drawByProblemCharts();
                 runChartTabTransition(tabName, switchId, drawByProblemCharts, false);
